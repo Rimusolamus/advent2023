@@ -24,19 +24,17 @@ fun init(): String {
 }
 
 private fun replaceStringNumbersWithInts(line: String): String {
-    var modifiedLine = line
     findFirstOrLastStringNumberInLine(line, true)?.let { firstNumber ->
-        modifiedLine.find { it.isDigit() }?.let {
-            if (modifiedLine.indexOf(it) < firstNumber.indexInLine) {
-                modifiedLine = handleLastNumber(modifiedLine)
+        line.find { it.isDigit() }?.let {
+            return if (line.indexOf(it) < firstNumber.indexInLine) {
+                handleLastNumber(line)
             } else {
-                modifiedLine = removeNumberFromLine(modifiedLine, firstNumber)
-                modifiedLine = handleLastNumber(modifiedLine)
+                handleLastNumber(removeNumberFromLine(line, firstNumber))
             }
         }
     }
 
-    return modifiedLine
+    return line
 }
 
 private fun handleLastNumber(line: String): String {
