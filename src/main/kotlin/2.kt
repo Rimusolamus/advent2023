@@ -1,36 +1,15 @@
 private const val input = "2.txt"
 
-private const val maxForRed = 12
-private const val maxForGreen = 13
-private const val maxForBlue = 14
-
 fun init2(): String {
     val listOfGames: List<CubeGame> = Utils.getResourceAsListOfLines(input).map { parseInputLine(it) }
     return listOfGames.sumOf { game ->
-        game.roundList.map { round ->
-            when (round.cubeColor) {
-                CubeColor.red -> {
-                    if (round.cubeNumber > maxForRed) {
-                        game.isFair = false
-                    }
-                }
-
-                CubeColor.green -> {
-                    if (round.cubeNumber > maxForGreen) {
-                        game.isFair = false
-                    }
-                }
-
-                CubeColor.blue -> {
-                    if (round.cubeNumber > maxForBlue) {
-                        game.isFair = false
-                    }
-                }
-            }
-        }
-        if (game.isFair)
-            game.id
-        else 0
+        val maxGreen =
+            game.roundList.filter { it.cubeColor == CubeColor.green }.maxByOrNull { it.cubeNumber }?.cubeNumber ?: 1
+        val maxRed =
+            game.roundList.filter { it.cubeColor == CubeColor.red }.maxByOrNull { it.cubeNumber }?.cubeNumber ?: 1
+        val maxBlue =
+            game.roundList.filter { it.cubeColor == CubeColor.blue }.maxByOrNull { it.cubeNumber }?.cubeNumber ?: 1
+        maxGreen * maxRed * maxBlue
     }.toString()
 }
 
