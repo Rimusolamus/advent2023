@@ -1,4 +1,7 @@
+import Utils.indexesOf
+
 private const val input = "1.txt"
+
 private const val ONE = "one"
 private const val TWO = "two"
 private const val THREE = "three"
@@ -19,6 +22,7 @@ fun init(): String {
         val last: String = lineWithReplacedStringNumber.last {
             it.isDigit()
         }.toString()
+        println(first + last)
         allNumbers.add((first + last).toInt())
     }
 
@@ -27,45 +31,56 @@ fun init(): String {
 
 private fun replaceStringNumbersWithInts(line: String): String {
     var modifiedLine = line
-    findFirstOrLastStringNumberInLine(line, true)?.let {
-        modifiedLine = line.replaceFirst(it.number, it.stringNumber)
+    findFirstOrLastStringNumberInLine(modifiedLine, true)?.let { firstNumber ->
+        modifiedLine.find { it.isDigit() }?.let {
+            if (modifiedLine.indexOf(it) < firstNumber.indexInLine) {
+                modifiedLine = handleLastNumber(modifiedLine)
+            } else {
+                modifiedLine = removeNumberFromLine(modifiedLine, firstNumber)
+                modifiedLine = handleLastNumber(modifiedLine)
+            }
+        }
     }
-    findFirstOrLastStringNumberInLine(line, false)?.let {
-        modifiedLine = modifiedLine.reversed().replaceFirst(it.number.reversed(), it.stringNumber).reversed()
+
+    return modifiedLine
+}
+
+private fun handleLastNumber(line: String): String {
+    var modifiedLine = line
+    findFirstOrLastStringNumberInLine(modifiedLine, false)?.let { secondNumber ->
+        modifiedLine = removeNumberFromLine(modifiedLine, secondNumber)
     }
     return modifiedLine
 }
 
-private fun findFirstOrLastStringNumberInLine(line: String, shouldFindFirst: Boolean): StringNumber? {
-    val stringNumbers = mutableListOf<StringNumber>()
-    if (line.contains(ONE)) {
-        stringNumbers.add(StringNumber(ONE, "1", line.indexOf(ONE)))
-    }
-    if (line.contains(TWO)) {
-        stringNumbers.add(StringNumber(TWO, "2", line.indexOf(TWO)))
-    }
-    if (line.contains(THREE)) {
-        stringNumbers.add(StringNumber(THREE, "3", line.indexOf(THREE)))
-    }
-    if (line.contains(FOUR)) {
-        stringNumbers.add(StringNumber(FOUR, "4", line.indexOf(FOUR)))
-    }
-    if (line.contains(FIVE)) {
-        stringNumbers.add(StringNumber(FIVE, "5", line.indexOf(FIVE)))
-    }
-    if (line.contains(SIX)) {
-        stringNumbers.add(StringNumber(SIX, "6", line.indexOf(SIX)))
-    }
-    if (line.contains(SEVEN)) {
-        stringNumbers.add(StringNumber(SEVEN, "7", line.indexOf(SEVEN)))
-    }
-    if (line.contains(EIGHT)) {
-        stringNumbers.add(StringNumber(EIGHT, "8", line.indexOf(EIGHT)))
-    }
-    if (line.contains(NINE)) {
-        stringNumbers.add(StringNumber(NINE, "9", line.indexOf(NINE)))
-    }
-    return if (shouldFindFirst) stringNumbers.minByOrNull { it.indexInLine } else stringNumbers.maxByOrNull { it.indexInLine }
+private fun removeNumberFromLine(line: String, number: StringNumber): String {
+    return line.replaceRange(number.indexInLine, number.indexInLine + number.number.length, number.toRealNumber())
 }
 
-private data class StringNumber(val number: String, val stringNumber: String, val indexInLine: Int)
+private fun StringNumber.toRealNumber(): String {
+    return when (this.number) {
+        ONE -> "1"
+        TWO -> "2"
+        THREE -> "3"
+        FOUR -> "4"
+        FIVE -> "5"
+        SIX -> "6"
+        SEVEN -> "7"
+        EIGHT -> "8"
+        NINE -> "9"
+        else -> "0"
+    }
+}
+
+private fun findFirstOrLastStringNumberInLine(line: String, getFirst: Boolean): StringNumber? {
+    val stringNumbers = mutableListOf<StringNumber>()
+    val numbers = listOf(ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE)
+    numbers.map { number ->
+        line.indexesOf(number).map { index ->
+            stringNumbers.add(StringNumber(number, index))
+        }
+    }
+    return if (getFirst) stringNumbers.minByOrNull { it.indexInLine } else stringNumbers.maxByOrNull { it.indexInLine }
+}
+
+private data class StringNumber(val number: String, val indexInLine: Int)
