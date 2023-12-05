@@ -12,7 +12,7 @@ private const val SEVEN = "seven"
 private const val EIGHT = "eight"
 private const val NINE = "nine"
 
-fun init(): String {
+fun init1(): String {
     return Utils.getResourceAsListOfLines(input).sumOf { line ->
         val lineWithReplacedStringNumber = replaceStringNumbersWithInts(line)
         (lineWithReplacedStringNumber.first {
