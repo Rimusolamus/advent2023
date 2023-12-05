@@ -50,6 +50,16 @@ private fun removeNumberFromLine(line: String, number: StringNumber): String {
     return line.replaceRange(number.indexInLine, number.indexInLine + number.number.length, number.toRealNumber())
 }
 
+private fun findFirstOrLastStringNumberInLine(line: String, getFirst: Boolean): StringNumber? {
+    val numbers = listOf(ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE)
+    val stringNumbers: List<StringNumber> = numbers.flatMap { number ->
+        line.indexesOf(number).map { index ->
+            return@map StringNumber(number, index)
+        }
+    }
+    return if (getFirst) stringNumbers.minByOrNull { it.indexInLine } else stringNumbers.maxByOrNull { it.indexInLine }
+}
+
 private fun StringNumber.toRealNumber(): String {
     return when (this.number) {
         ONE -> "1"
@@ -63,17 +73,6 @@ private fun StringNumber.toRealNumber(): String {
         NINE -> "9"
         else -> "0"
     }
-}
-
-private fun findFirstOrLastStringNumberInLine(line: String, getFirst: Boolean): StringNumber? {
-    val stringNumbers = mutableListOf<StringNumber>()
-    val numbers = listOf(ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE)
-    numbers.map { number ->
-        line.indexesOf(number).map { index ->
-            stringNumbers.add(StringNumber(number, index))
-        }
-    }
-    return if (getFirst) stringNumbers.minByOrNull { it.indexInLine } else stringNumbers.maxByOrNull { it.indexInLine }
 }
 
 private data class StringNumber(val number: String, val indexInLine: Int)
