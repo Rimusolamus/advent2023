@@ -13,25 +13,19 @@ private const val EIGHT = "eight"
 private const val NINE = "nine"
 
 fun init(): String {
-    val allNumbers: MutableList<Int> = mutableListOf()
-    for (line in Utils.getResourceAsListOfLines(input)) {
+    return Utils.getResourceAsListOfLines(input).sumOf { line ->
         val lineWithReplacedStringNumber = replaceStringNumbersWithInts(line)
-        val first: String = lineWithReplacedStringNumber.first {
+        (lineWithReplacedStringNumber.first {
             it.isDigit()
-        }.toString()
-        val last: String = lineWithReplacedStringNumber.last {
+        }.toString() + lineWithReplacedStringNumber.last {
             it.isDigit()
-        }.toString()
-        println(first + last)
-        allNumbers.add((first + last).toInt())
-    }
-
-    return allNumbers.sum().toString()
+        }.toString()).toInt()
+    }.toString()
 }
 
 private fun replaceStringNumbersWithInts(line: String): String {
     var modifiedLine = line
-    findFirstOrLastStringNumberInLine(modifiedLine, true)?.let { firstNumber ->
+    findFirstOrLastStringNumberInLine(line, true)?.let { firstNumber ->
         modifiedLine.find { it.isDigit() }?.let {
             if (modifiedLine.indexOf(it) < firstNumber.indexInLine) {
                 modifiedLine = handleLastNumber(modifiedLine)
@@ -46,11 +40,10 @@ private fun replaceStringNumbersWithInts(line: String): String {
 }
 
 private fun handleLastNumber(line: String): String {
-    var modifiedLine = line
-    findFirstOrLastStringNumberInLine(modifiedLine, false)?.let { secondNumber ->
-        modifiedLine = removeNumberFromLine(modifiedLine, secondNumber)
+    findFirstOrLastStringNumberInLine(line, false)?.let { secondNumber ->
+        return removeNumberFromLine(line, secondNumber)
     }
-    return modifiedLine
+    return line
 }
 
 private fun removeNumberFromLine(line: String, number: StringNumber): String {
